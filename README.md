@@ -51,4 +51,4 @@ This is the implementation of EXAQT described in CIKM 2021 paper Complex Tempora
 
 First download the data from the following [link](https://www.dropbox.com/home/exaqt/data).
 
-Make sure the path variables in the .yml file under your own settings.
+Make sure the path variables in the config.yml file under your own settings.
