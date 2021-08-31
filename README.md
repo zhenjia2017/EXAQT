@@ -1,4 +1,5 @@
-#EXAQT
+EXAQT + TimeQuestions
+============
 
 This is the implementation of EXAQT described in CIKM 2021 paper Complex Temporal Question Answering on Knowledge Graphs.
 
