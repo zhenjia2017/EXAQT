@@ -55,7 +55,7 @@ PROI = "http://wikiba.se/ontology#WikibaseItem"
 PROQ = "http://wikiba.se/ontology#Quantity"
 PROT = "http://wikiba.se/ontology#Time"
 
-config_file = '../config/config.yml'
+config_file = '../config.yml'
 
 def get_config(config_path):
     """Read configuration and set variables.
