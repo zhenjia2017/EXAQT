@@ -41,7 +41,7 @@ To install the required libraries, it is recommended to create a virtual environ
 
 Data
 ------
-The benchmark, all required intermediate data and our main results can be downloaded from here (unzip and put it in the root folder of the cloned github repo; total data size around 40 GB): https://exaqt.mpi-inf.mpg.de/static/data.zip 
+The benchmark, preprocessed Wikidata facts for each question, all required intermediate data and our main results can be downloaded from [here](https://exaqt.mpi-inf.mpg.de/static/data.zip) (unzip and put it in the root folder of the cloned github repo; total data size around 40 GB): 
 
 The data folder structure is as follows:
 
@@ -49,39 +49,39 @@ The data folder structure is as follows:
 ```
 data
 ├── compactgst
+    ├── train_25_25.json
     ├── dev_25_25.json
-    ├── test_25_25.json
-    └── train_25_25.json  
+    └── test_25_25.json  
 ├── connectivity
     └── seedpair_question_best_connectivity_paths_score.pkl    
 ├── dictionaries
 ├── files
     ├── ques_1
     ├── ques_2
-	├── ...	
-	└── ques_16181
+    ├── ...
+    └── ques_16181
 ├── model
 ├── temcompactgst
+    ├── train_25_25_temp.json
+    ├── train_25_25_temp_rank
     ├── dev_25_25_temp.json
     ├── dev_25_25_temp_rank
     ├── test_25_25_temp.json
-    ├── test_25_25_temp_rank
-    ├── train_25_25_temp.json
-    └── train_25_25_temp_rank
+    └── test_25_25_temp_rank
 ├── TimeQuestions
-	├── dev.json
-    ├── test.json
-    └── train.json
+	├── train.json
+    ├── dev.json
+    └── test.json
 └── wikidata_property_dictionary.json
 ```
 
- - ./compactgst: completed gst subgraph files for each question when top-f = 25 and top-g = 25
- - ./connectivity: shortest connect path of seed pairs for each question
- - ./dictionaries: relational graphs, dictionaries and pretrained embedding files for answer prediction
- - ./files: 16181 question folders for each question in the benchmark containing seed entity, KG facts, scored KG facts, quasi question graph, cornerstones and gst graph files  
- - ./model: pretrained fine-tune bert models and wikipedia2vec model
- - ./temcompactgst: completed gst subgraphs with temporal facts and ranked temporal facts files
- - ./TimeQuestions: benchmark 
+ - ./compactgst: completed GST subgraph for each question
+ - ./connectivity: preprocessed connectivity data including shortest connect path of seed pairs for each question
+ - ./dictionaries: relational graphs, dictionaries and pretrained embedding files used in answer prediction
+ - ./files: preprocessed Wikidata facts and intermediate data for each question including seed entity, scored facts, quasi question graph, cornerstones and gst graph files  
+ - ./model: pretrained fine-tune BERT models and wikipedia2vec model
+ - ./temcompactgst: completed GST subgraphs with temporal facts and ranked temporal facts files
+ - ./TimeQuestions: benchmark including train, dev and test 
  - ./wikidata\_property\_dictionary.json: Wikidata properties with type, label and alias
 
 
