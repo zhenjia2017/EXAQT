@@ -285,16 +285,14 @@ def _read_weight_from_QKG(graph_file):
 
 def get_subgraph(dataset, pro_info, cfg, topf = 25, topg = 25, topt = 25):
     t1 = time.time()
-    gcn_file_path = cfg['gcn_file_path']
-    os.makedirs(gcn_file_path, exist_ok=True)
-    analysis_file = gcn_file_path + '/' + dataset + "_relation_subg_analysis.txt"
-    fa = open(analysis_file, "w", encoding='utf-8')
-    subgraph_file = gcn_file_path + "/" + dataset +  "_subgraph.json"
+    answer_predict_path = cfg['answer_predict_path']
+    os.makedirs(answer_predict_path, exist_ok=True)
+    subgraph_file = answer_predict_path + "/" + dataset +  "_subgraph.json"
     fo = open(subgraph_file, "wb")
 
-    test = cfg["data_path"] + cfg["test_data"]
-    dev = cfg["data_path"] + cfg["dev_data"]
-    train = cfg["data_path"] + cfg["train_data"]
+    test = cfg["benchmark_path"] + cfg["test_data"]
+    dev = cfg["benchmark_path"] + cfg["dev_data"]
+    train = cfg["benchmark_path"] + cfg["train_data"]
 
     if dataset == 'test':
         in_file = test
@@ -304,34 +302,33 @@ def get_subgraph(dataset, pro_info, cfg, topf = 25, topg = 25, topt = 25):
         in_file = train
 
     questions = json.load(open(in_file))
-    graphspo_file = cfg["data_path"] + dataset + '_' + str(topf) + '_' + str(topg) + ".json"
+    graphspo_file = cfg["compactgst"] + dataset + '_' + str(topf) + '_' + str(topg) + ".json"
+    tempspo_file = cfg["temcompactsubg_path"] + dataset + '_' + str(topf) + '_' + str(topg) + '_temp.json'
+    tempspo_rank_file = cfg["temcompactsubg_path"] + dataset + '_' + str(topf) + '_' + str(topg) + '_temp_rank'
+    tempspo_rank = pickle.load(open(tempspo_rank_file, 'rb'))
     ques_temprank = {}
     ques_enhance = {}
-    if topt > 0 :
-        tempspo_file = cfg["data_path"] + dataset + '_' + str(topf) + '_' + str(
-                topg) + '_temp.json'
-        tempspo_rank_file = cfg["data_path"] + dataset + '_' + str(topf) + '_' + str(topg) + '_temp_rank'
-        tempspo_rank = pickle.load(open(tempspo_rank_file, 'rb'))
-        for item in tempspo_rank:
-            hit_sta = []
-            for rank in item['rank']:
-                k = rank.split('\t')[0]
-                if int(k) <= topt:
-                    hit_sta.append(rank.split('\t')[1])
-            ques_temprank[item['id']] = hit_sta
 
-        with open(tempspo_file, encoding = 'utf-8') as f_in:
-            for line in tqdm(f_in):
-                enhance_facts = []
-                line = json.loads(line)
-                hit_sta = ques_temprank[line['id']]
-                for temp_line in line['tempfact']:
-                    triple = temp_line.strip().split('||')
-                    if len(triple) < 7 or len(triple) > 7: continue
-                    statement_id = triple[0].replace("-ps:", "").replace("-pq:", "").lower()
-                    if statement_id in hit_sta:
-                        enhance_facts.append(temp_line)
-                ques_enhance[line['id']] = enhance_facts
+    for item in tempspo_rank:
+        hit_sta = []
+        for rank in item['rank']:
+            k = rank.split('\t')[0]
+            if int(k) <= topt:
+                hit_sta.append(rank.split('\t')[1])
+        ques_temprank[item['id']] = hit_sta
+
+    with open(tempspo_file, encoding = 'utf-8') as f_in:
+        for line in tqdm(f_in):
+            enhance_facts = []
+            line = json.loads(line)
+            hit_sta = ques_temprank[line['id']]
+            for temp_line in line['tempfact']:
+                triple = temp_line.strip().split('||')
+                if len(triple) < 7 or len(triple) > 7: continue
+                statement_id = triple[0].replace("-ps:", "").replace("-pq:", "").lower()
+                if statement_id in hit_sta:
+                    enhance_facts.append(temp_line)
+            ques_enhance[line['id']] = enhance_facts
 
     ques_spos = {}
     with open(graphspo_file, encoding='utf-8') as f_in:
@@ -345,10 +342,8 @@ def get_subgraph(dataset, pro_info, cfg, topf = 25, topg = 25, topt = 25):
     bad_questions = []
     good_questions = []
     ok_questions = []
-    num_empty_tuples = 0
     SPONOTFOUND = 0
     total_entities = 0
-    connect_subgraphs = []
     for question in questions:
         QuestionId = question["Id"]
         QuestionText = question["Question"]
@@ -356,7 +351,7 @@ def get_subgraph(dataset, pro_info, cfg, topf = 25, topg = 25, topt = 25):
         print("Question -> ", QuestionText)
         path = cfg['ques_path'] + 'ques_' + str(QuestionId)
         graph_file = path + '/QKG_' + str(topf) + '.gpickle'
-        corner_file = path + '/cornerstone_' + str(topf)
+        corner_file = path + '/cornerstone_' + str(topf)+ '.pkl'
         tagme_file = path + '/wiki_ids_tagme.txt'
         elq_file = path + '/wiki_ids_elq.txt'
         lines = ques_spos[QuestionId]
@@ -377,9 +372,7 @@ def get_subgraph(dataset, pro_info, cfg, topf = 25, topg = 25, topt = 25):
         for ee in seed_map[QuestionId]:
             if ee in ents:
                 seed_entities.append(ee)
-
         entities_weight = _read_weight_from_QKG(graph_file)
-
         if corner_entities:
             for answer in GT:
                 if answer[0] in ents:
@@ -441,42 +434,21 @@ def get_subgraph(dataset, pro_info, cfg, topf = 25, topg = 25, topt = 25):
                 str(len(seed_entities)),
                 str(curr_recall)
                 )
-        fa.write(result)
-        fa.write('\n')
+        print (result)
 
     t2 = time.time()
-
-    fa.write("total number of questions: " + str(total) + '\n')
-    fa.write("total number of entities: " + str(total_entities)  + '\n')
-    fa.write("average number of entities: " + str(total_entities * 1.0 / (total - SPONOTFOUND))  + '\n')
-    fa.write("questions with empty subgraphs: " + str(SPONOTFOUND)  + '\n')
-    fa.write("Good questions =  " + str(len(good_questions) * 1.0 / total)  + '\n')
-    fa.write("Number of good questions =  " + str(len(good_questions))  + '\n')
-    fa.write("Number of ok questions =  " + str(len(ok_questions))  + '\n')
-    fa.write("Answer recall =  " + str(answer_recall / total)  + '\n')
-    fa.write("total time: " + str(t2-t1) + '\n')
-    fa.write("average time: " + str((t2-t1) * 1.0 / total) + '\n')
     fo.close()
-    fa.close()
+    print("total number of questions: " + str(total))
+    print("total number of entities: " + str(total_entities))
+    print("average number of entities: " + str(total_entities * 1.0 / (total - SPONOTFOUND)))
+    print("questions with empty subgraphs: " + str(SPONOTFOUND) )
+    print("Good questions =  " + str(len(good_questions) * 1.0 / total) )
+    print("Number of good questions =  " + str(len(good_questions)) )
+    print("Number of ok questions =  " + str(len(ok_questions)))
+    print("Answer recall =  " + str(answer_recall / total))
+    print("total time: " + str(t2-t1))
+    print("average time: " + str((t2-t1) * 1.0 / total) )
 
-    print("total number of questions.")
-    print(str(total))
-    print("total number of entities.")
-    print(str(total_entities))
-    print("questions with empty subgraphs.")
-    print(str(num_empty_tuples))
-    print("Good questions = ")
-    print(str(len(good_questions) * 1.0 / total))
-    print("Number of good questions = ")
-    print(str(len(good_questions)))
-    print("Number of OK questions = ")
-    print(str(len(ok_questions)))
-    print("Answer recall = ")
-    print(str(answer_recall / total))
-    print("SPO files not found = ")
-    print(str(SPONOTFOUND))
-    print("average number of entities.")
-    print(str(total_entities * 1.0 / (total - SPONOTFOUND)))
 
 if __name__ == "__main__":
     import argparse

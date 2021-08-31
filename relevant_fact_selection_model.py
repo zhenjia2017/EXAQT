@@ -1,5 +1,5 @@
 """
-Script to get score for each fact (or sentence) using the fine-tuned Bert model.
+Script to get score and ranking of each fact using the fine-tuned Bert model.
 """
 import truecase
 import os
@@ -145,9 +145,9 @@ if __name__ == "__main__":
     MODEL.eval()
     print ("load model successfully!")
     pro_info = globals.ReadProperty.init_from_config().property
-    test = cfg["data_path"] + cfg["test_data"]
-    dev = cfg["data_path"] + cfg["dev_data"]
-    train = cfg["data_path"] + cfg["train_data"]
+    test = cfg["benchmark_path"] + cfg["test_data"]
+    dev = cfg["benchmark_path"] + cfg["dev_data"]
+    train = cfg["benchmark_path"] + cfg["train_data"]
     if dataset == 'dev':
         in_file = dev
     elif dataset == 'test':
@@ -163,8 +163,8 @@ if __name__ == "__main__":
             ques_text = question["Question"]
             path = cfg['ques_path'] + 'ques_' + str(question["Id"])
             spo_file = path + '/SPO.txt'
-            spo_score_file = path + '/SPO_score_1hop.txt'
-            spo_rank_file = path + '/SPO_rank_1hop'
+            spo_score_file = path + '/SPO_score.txt'
+            spo_rank_file = path + '/SPO_rank.pkl'
             if os.path.exists(spo_score_file):
                 print ("spo_score_file exist!")
                 continue
@@ -183,9 +183,7 @@ if __name__ == "__main__":
             for i, item in enumerate(sta_score):
                 rank_fact_dic[str(i+1)] = str(item[0]) +  '\t' +  str(item[1])
                 f1.write(str(i+1) + '\t' + str(item[0]) + '\t' + str(item[1]) + '\t' + str(item[2]) + '\n')
+
+            pickle.dump(rank_fact_dic, open(spo_rank_file, 'wb'))
             f1.close()
-            f3 = open(spo_rank_file, 'wb')
-            pickle.dump(rank_fact_dic, f3)
-            f3.close()
-    print("\nno_spo_file_count: ", str(no_spo_file_count))
 

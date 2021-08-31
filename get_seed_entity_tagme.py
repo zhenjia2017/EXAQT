@@ -117,7 +117,7 @@ class EntityLinkTagMeMatch():
         return tagme_ent
 
 def get_seed_entities_tagme(TAGME, path, id, question):
-    tagme_file = path + '/tagme'
+    tagme_file = path + '/tagme.pkl'
     wiki_ids_file = path + '/wiki_ids_tagme.txt'
     wiki_ids = set()
     tagme_ent = TAGME.get_seed_entities_tagme(question)
@@ -129,21 +129,20 @@ def get_seed_entities_tagme(TAGME, path, id, question):
             score = float(tagme_ent['spot'][index][3])
             wiki_ids.add((id1[0], score, text))
 
-    f1 = open(tagme_file, 'wb')
-    f3 = open(wiki_ids_file, 'w', encoding='utf-8')
-    pickle.dump(tagme_ent, f1)
+    f1 = open(wiki_ids_file, 'w', encoding='utf-8')
+    pickle.dump(tagme_ent, open(tagme_file, 'wb'))
     for item in wiki_ids:
-        f3.write(str(item[0]) + '\t' + str(item[1]) + '\t' + str(item[2]) + '\n')
+        f1.write(str(item[0]) + '\t' + str(item[1]) + '\t' + str(item[2]) + '\n')
     f1.close()
-    f3.close()
 
 if __name__ == "__main__":
     # prepare data...
     print("\n\nPrepare data and start...")
     cfg = globals.get_config(globals.config_file)
-    test = cfg["data_path"] + cfg["test_data"]
-    dev = cfg["data_path"] + cfg["dev_data"]
-    train = cfg["data_path"] + cfg["train_data"]
+    test = cfg["benchmark_path"] + cfg["test_data"]
+    dev = cfg["benchmark_path"] + cfg["dev_data"]
+    train = cfg["benchmark_path"] + cfg["train_data"]
+    # create the folder for saving required intermediate data for all questions
     os.makedirs(cfg["ques_path"], exist_ok=True)
     tagme_threshold = 0
     TAGME = EntityLinkTagMeMatch(tagme_threshold)
@@ -153,7 +152,9 @@ if __name__ == "__main__":
         for question in data:
             QuestionId = str(question["Id"])
             QuestionText = question["Question"]
+            # get truecase form of question
             QuestionText = truecase.get_true_case(QuestionText)
             path = cfg["ques_path"] + 'ques_' + str(QuestionId)
+            # create the folder for saving required intermediate data for each questions
             os.makedirs(path, exist_ok=True)
             get_seed_entities_tagme(TAGME, path, QuestionId, QuestionText)

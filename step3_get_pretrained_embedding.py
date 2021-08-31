@@ -197,12 +197,6 @@ def average_word_emb(word, wordli, wiki2vec, no_in_word):
             c += 1
         except KeyError:
             continue
-            # try:
-            #     value = wiki2vec.get_entity_vector(item.capitalize())
-            #     flag = 1
-            #     c += 1
-            # except KeyError:
-            #     value = np.random.uniform(low=-0.5, high=0.5, size=(word_dim,))
         vocab_emb += value
     if flag == 0:
         no_in_word.append(word)
@@ -270,7 +264,6 @@ def average_ent_emb(ent, wiki2vec, no_in_entity):
         value_word = np.zeros((word_dim,))
         for word in ent_li:
             key_li = [word, word.capitalize(), word.lower(), WL.lemmatize(word), PS.stem(word), LC.stem(word), SB.stem(word)]
-            #key_li = [word, word.lower(), PS.stem(word), LC.stem(word), SB.stem(word)]
             for item in key_li:
                 try:
                     value_word += wiki2vec.get_word_vector(item)
@@ -300,10 +293,6 @@ def word_emb(word2id, wiki2vec):
                 vocab_emb[i_str] = wiki2vec.get_word_vector(item)
             except KeyError:
                 continue
-                # try:
-                #     vocab_emb[i_str] = wiki2vec.get_entity_vector(item)
-                # except KeyError:
-                #     continue
             else:
                 break
         else:
@@ -430,7 +419,7 @@ def tempfact_emb(sorted_tkgfacts, entity2id, relation2id, entity_embeddings, rel
     entity_emb_dim = 100
     tempf_emb = {r: np.zeros((3 * entity_emb_dim + relation_aver_emb_dim,)) for r in reverse_tempfact2id}
     tempf_te_emb = {r: np.zeros((3 * entity_emb_dim + relation_aver_emb_dim + tem_dim,)) for r in reverse_tempfact2id}
-    entity2temp = {}
+
     for i in range(len(reverse_tempfact2id)):
         i_str = str(i)
         tuple = reverse_tempfact2id[i_str]
@@ -440,12 +429,6 @@ def tempfact_emb(sorted_tkgfacts, entity2id, relation2id, entity_embeddings, rel
         trel_emb = relation_embeddings[str(relation2id[tuple[3]])]
         date_te_emb = date_embeddings[str(entity2id[tuple[4]])]
         date_ent_emb = entity_embeddings[str(entity2id[tuple[4]])]
-        if entity2id[tuple[0]] not in entity2temp:
-            entity2temp[entity2id[tuple[0]]] = []
-        entity2temp[entity2id[tuple[0]]].append(i_str)
-        if entity2id[tuple[2]] not in entity2temp:
-            entity2temp[entity2id[tuple[2]]] = []
-        entity2temp[entity2id[tuple[2]]].append(i_str)
 
         tempf_te_emb[i_str] = np.concatenate((sub_emb, (rel_emb + trel_emb) / 2 , obj_emb, date_ent_emb, date_te_emb), axis=0)
         te_embedding_matrix.append(tempf_te_emb[i_str])
@@ -457,35 +440,32 @@ def tempfact_emb(sorted_tkgfacts, entity2id, relation2id, entity_embeddings, rel
     embedding_matrix = np.asarray(embedding_matrix)
     print("len of te embedding_matrix: ", str(len(te_embedding_matrix)))
     print("len of non-te embedding_matrix: ", str(len(embedding_matrix)))
-    return tempf_te_emb, te_embedding_matrix, tempf_emb, embedding_matrix, entity2temp, tempfact2id
+    return tempf_te_emb, te_embedding_matrix, tempf_emb, embedding_matrix, tempfact2id
 
 def load_dict(filename):
     word2id = dict()
     with open(filename) as f_in:
         for line in f_in:
-            #word = line.strip().decode('UTF-8')
             word = line.strip()
             word2id[word] = len(word2id)
     print(len(word2id))
     return word2id
 
-def get_pretrained_embedding_from_wiki2vec(MODEL_FILE, gcn_file_path):
-    data_path = gcn_file_path
+def get_pretrained_embedding_from_wiki2vec(MODEL_FILE, answer_predict_path):
     wiki2vec = Wikipedia2Vec.load(MODEL_FILE)
-    fp_entity = gcn_file_path + '/entities.txt'
-    fp_entity_name_map = gcn_file_path + '/entity_name_map.pkl'
-    fp_relation = gcn_file_path + '/' + '/relations.txt'
-    fp_word = gcn_file_path + '/words.txt'
-    fp_date = gcn_file_path + '/dates.txt'
-    fp_tempfact_pkl = gcn_file_path + '/tempfacts.pkl'
-    fp_entity2tempfact_pkl = gcn_file_path + '/entity2tempfacts.pkl'
-    fp_tempfact2id_pkl =  gcn_file_path + '/tempfacts2id.pkl'
-    relation_emb_file = data_path + '/relation_emb_100d.npy'
-    vocab_emb_file = data_path + '/word_emb_100d.npy'
-    entity_emb_file = data_path + '/entity_emb_100d.npy'
-    entity_date_emb_file = data_path + '/date_te_emb_100d.npy'
-    tempfact_te_emb_file = data_path + '/tempfact_te_emb_500d.npy'
-    tempfact_emb_file = data_path + '/tempfact_emb_400d.npy'
+    fp_entity = answer_predict_path + 'entities.txt'
+    fp_entity_name_map = answer_predict_path + 'entity_name_map.pkl'
+    fp_relation = answer_predict_path + 'relations.txt'
+    fp_word = answer_predict_path + 'words.txt'
+    fp_date = answer_predict_path + 'dates.txt'
+    fp_tempfact_pkl = answer_predict_path + 'tempfacts.pkl'
+    fp_tempfact2id_pkl =  answer_predict_path + 'tempfacts2id.pkl'
+    relation_emb_file = answer_predict_path + 'relation_emb_100d.npy'
+    vocab_emb_file = answer_predict_path + 'word_emb_100d.npy'
+    entity_emb_file = answer_predict_path + 'entity_emb_100d.npy'
+    entity_date_emb_file = answer_predict_path + 'date_te_emb_100d.npy'
+    tempfact_te_emb_file = answer_predict_path + 'tempfact_te_emb_500d.npy'
+    tempfact_emb_file = answer_predict_path + 'tempfact_emb_400d.npy'
 
     sorted_tkgfacts = pickle.load(open(fp_tempfact_pkl, 'rb'))
     min = sorted_tkgfacts[0][4]
@@ -510,9 +490,8 @@ def get_pretrained_embedding_from_wiki2vec(MODEL_FILE, gcn_file_path):
     print('Time encoding for Dates...')
     date_embeddings, date_embedding_matrix = date_emb(entity2id, date2id, time_encoder_mgr, max_date, min_date)
     print('Embedding Tempfacts...')
-    tempf_te_emb, tempf_te_embedding_matrix, tempf_emb, tempf_embedding_matrix, entity2temp, tempfact2id = tempfact_emb(sorted_tkgfacts, entity2id, relation2id, entity_embeddings, relation_embeddings, date_embeddings)
+    tempf_te_emb, tempf_te_embedding_matrix, tempf_emb, tempf_embedding_matrix, tempfact2id = tempfact_emb(sorted_tkgfacts, entity2id, relation2id, entity_embeddings, relation_embeddings, date_embeddings)
 
-    pickle.dump(entity2temp, open(fp_entity2tempfact_pkl, 'wb'))
     pickle.dump(tempfact2id, open(fp_tempfact2id_pkl, 'wb'))
     print('Saving Relations....')
     np.save(relation_emb_file, relation_embedding_matrix)
@@ -528,10 +507,8 @@ def get_pretrained_embedding_from_wiki2vec(MODEL_FILE, gcn_file_path):
     np.save(tempfact_emb_file, tempf_embedding_matrix)
 
 if __name__ == "__main__":
-
     cfg = globals.get_config(globals.config_file)
-    pro_info = globals.ReadProperty.init_from_config().property
     topf = topg = topt = 25
-    gcn_file_path = cfg['gcn_file_path']
-    MODEL_FILE = cfg['wikipedia2vec']
-    get_pretrained_embedding_from_wiki2vec(MODEL_FILE, gcn_file_path)
+    answer_predict_path = cfg['answer_predict_path']
+    MODEL_FILE = cfg['model_path'] + cfg['wikipedia2vec']
+    get_pretrained_embedding_from_wiki2vec(MODEL_FILE, answer_predict_path)

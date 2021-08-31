@@ -1,4 +1,5 @@
-"""Script to get top-g GSTs from top-f scored facts for questions.
+"""Script to get top-g GSTs compact subgraph for questions from top-f scored facts .
+   Default: top-f = top-g = 25
 """
 import copy
 import os
@@ -20,6 +21,7 @@ from nltk.corpus import stopwords
 stop_words = set(stopwords.words('english'))
 MAX_TIME = 300
 
+#remove symbols from relation (predicate, property) labels
 def replace_symbols_in_relation(s):
     s = s.replace('(', ' ')
     s = s.replace(')', ' ')
@@ -45,6 +47,7 @@ def replace_symbols_in_relation(s):
     s = s.strip()
     return s
 
+#remove symbols from question texts
 def replace_symbols_in_question(s):
     s = s.replace('(', ' ')
     s = s.replace(')', ' ')
@@ -64,6 +67,7 @@ def replace_symbols_in_question(s):
     s = s.strip()
     return s
 
+#get label, alias and type of relations
 def property_type_label_alias(pre, pro_info):
     type = ""
     label = ""
@@ -78,6 +82,7 @@ def property_type_label_alias(pre, pro_info):
             alias = [altLabel]
     return type, label, alias
 
+#create quasi question graph from spo triples
 def build_graph_from_triple_edges(unique_SPO_dict, proinfo, sta_score):
     G = nx.DiGraph()
     pred_count = {}
@@ -85,6 +90,7 @@ def build_graph_from_triple_edges(unique_SPO_dict, proinfo, sta_score):
         n2_id = n2.split("#")[0]
         n2_sta = n2.split("#")[1]
         sta_weight = sta_score[n2_sta]
+        #get type, label, and alias of relations n2_id
         n22t, n22l, n22a = property_type_label_alias(n2_id, proinfo)
         n1_name = unique_SPO_dict[(n1, n2, n3)]['name_n1']
         n3_name = unique_SPO_dict[(n1, n2, n3)]['name_n3'].replace('T00:00:00Z','')
@@ -111,16 +117,13 @@ def build_graph_from_triple_edges(unique_SPO_dict, proinfo, sta_score):
         G.add_edge(n11, n22, weight=sta_weight, wlist=[sta_weight], etype='Triple')
         G.add_edge(n22, n33, weight=sta_weight, wlist=[sta_weight], etype='Triple')
 
-        # ADD qualifier nodes edges
-
+        #add qualifier nodes edges
         if 'qualifier' in unique_SPO_dict[(n1, n2, n3)]:
             for qualct in range (0, len (unique_SPO_dict[(n1, n2, n3)]['qualifier'])):
                 qual = unique_SPO_dict[(n1, n2, n3)]['qualifier'][qualct]
-                #qn2 = qual[0]
                 qn2_id = qual[0].split("#")[0]
                 qn3_id = qual[1]
                 qn3_name = qual[2].replace('T00:00:00Z','')
-                #qn2,qn3_id,qn3_name
                 qn22t, qn22l, qn22a = property_type_label_alias (qn2_id, proinfo)
                 if qn22l not in pred_count:
                     pred_count[qn22l] = 1
@@ -143,6 +146,7 @@ def build_graph_from_triple_edges(unique_SPO_dict, proinfo, sta_score):
 
     return G
 
+#convert quasi question graph from directed to undirected graph
 def directed_to_undirected(G1):
     G = nx.Graph()
     for n in G1:
@@ -163,7 +167,6 @@ def directed_to_undirected(G1):
 
             d = data['weight']
             wlist1 = copy.deepcopy(data['wlist'])
-            #print ("wlist1",wlist1)
             etype1 = data['etype']
 
             if (n2, n1) in G1.edges():
@@ -171,11 +174,11 @@ def directed_to_undirected(G1):
                 if data1['etype'] == 'Triple':
                     if data1['weight'] > d:  # Keeping maximum weight edge
                         d = data1['weight']
-                    #print (len(data1['wlist']))
+
                     for w in data1['wlist']:
-                        #print ("wlist",w,wlist1)
+
                         wlist1.append(w)
-                    #print (len(wlist1))
+
 
             for i in range(0, len(wlist1)):
                 if wlist1[i] > 1.0 and wlist1[i] <= 1.0001:
@@ -199,6 +202,7 @@ def directed_to_undirected(G1):
                 flag += 1
     return G
 
+#get cornerstones of property
 def pred_match(labels, q_ent):
     matched = ''
     lab_stem = set()
@@ -223,14 +227,10 @@ def pred_match(labels, q_ent):
     return matched
 
 def get_spo_for_build_graph(spo_lines,q_ent,hit_sta,sta_score,ent_sta):
-    #print("\n\n terms: ")
-    #print(q_ent)
     corner_ent = {}
     unique_SPO_dict = {}
     spo_fact = {}
     qkgspo = []
-    # qkgspo = open(graph_spo_file, 'w', encoding='utf-8')
-
     for line in spo_lines:
         triple = line.strip().split('||')
         if len(triple) < 7 or len(triple) > 7: continue
@@ -514,15 +514,9 @@ def call_main_GRAPH(spo_file, spo_rank_file, rank, q_ent, graph_file, corner_fil
                 corner2[G.nodes[n]['matched']] = []
             corner2[G.nodes[n]['matched']].append(n)
 
-    #print ("Final query terms -->", len(q_ent), q_ent)
-    #print ('seed nodes -->', seed_ids)
-    #print ('corner entities -->', corner_ent)
     cornerstone = {}
     for v in corner2:
-        # print("v in corner  -->")
-        # print(v)
         for e in corner2[v]:
-            #print(e)
             cornerstone[e] = v
     try:
         f77 = open(corner_file, 'wb')
@@ -659,16 +653,15 @@ class QuestionUnionGST():
 
         for line in uniongstspolines:
             gstspo.append(line)
-        #gstspo.close()
         return gstspo
 
     def get_QKG_GST_from_spo(self, id, question, gt, seeds_paths, add_spo_line, add_spo_score):
         path = self.cfg['ques_path'] + 'ques_' + str(id)
         spo_file = path + '/SPO.txt'
-        spo_rank_file = path + '/SPO_rank_1hop'
+        spo_rank_file = path + '/SPO_rank.pkl'
 
         graph_file = path + '/QKG_' + str(self.topf) + '.gpickle'
-        corner_file = path + '/cornerstone_' +  str(self.topf)
+        corner_file = path + '/cornerstone_' +  str(self.topf)+ '.pkl'
         unionGST_file = path + '/unionGST_' +  str(self.topf) + '_' + str(self.topg) + '.gpickle'
 
         result = "{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}".format(
@@ -693,20 +686,17 @@ class QuestionUnionGST():
             '0',
             '0',
             '0')
-        #print (question)
         qterms = replace_symbols_in_question(question)
-        #print (qterms.split())
         q_ent = set()
         for term in qterms.split():
             if term not in stop_words:
                 q_ent.add(term.lower())
-        #print(q_ent)
         t1 = time.time()
 
         if not (os.path.exists(spo_file)):
             return result, [], []
 
-        #print("\n\nGenerating QKG from SPOS...\n")
+        print("\n\nGenerating QKG from SPOS...\n")
         QKG, cornerstone, qkgspo, number_of_components, number_of_components_connect = call_main_GRAPH(spo_file, spo_rank_file, self.topf, q_ent, graph_file, corner_file, pro_info, seeds_paths, add_spo_line, add_spo_score)
         if number_of_components_connect < 1: return result, [], []
         S = [QKG.subgraph(c).copy() for c in nx.connected_components(QKG)]
@@ -796,38 +786,32 @@ if __name__ == "__main__":
     dataset = args.dataset
     topf = args.topf
     topg = args.topg
-    connect = args.connect
-    test = cfg["data_path"] + cfg["test_data"]
-    dev = cfg["data_path"] + cfg["dev_data"]
-    train = cfg["data_path"] + cfg["train_data"]
+
+    test = cfg["benchmark_path"] + cfg["test_data"]
+    dev = cfg["benchmark_path"] + cfg["dev_data"]
+    train = cfg["benchmark_path"] + cfg["train_data"]
     if dataset == 'test': in_file = test
     elif dataset == 'dev': in_file = dev
     elif dataset == 'train': in_file = train
     ques_seeds_paths = {}
-    path_file = cfg["data_path"] + "seedpair_question_best_connectivity_paths_score.pkl"
+    #connect path for seed pairs
+    path_file = cfg["connect_path"] + "seedpair_question_best_connectivity_paths_score.pkl"
     ques_seeds_paths = pickle.load(open(path_file, 'rb'))
     gst_GST = QuestionUnionGST(cfg, pro_info, topf, topg)
-    analysis_file = cfg["data_path"] + 'analysis/' + dataset + '_' + str(topf) + '_'  + str(topg) + 'compact_subgraph_analysis.txt'
-    fo = open(analysis_file, 'w', encoding='utf-8')
     result_number = {'qent': [], 'corner': [], 'qkgentity': [], 'qkgnode': [], 'gstnode': [], 'gstentity': [],'qkgac': [],
                      'gstac': [], 'completegstentity':[], 'complete_gstac': [], 'number_of_components':[], 'number_of_components_connect':[], 'time': []}
 
     groundtruth = get_groundtruth(in_file)
     data = json.load(open(in_file))
-    qkg_path = cfg["data_path"] + connect + "_qkg"
-    gst_path = cfg["data_path"] + connect + "_xg"
-    os.makedirs(qkg_path, exist_ok=True)
-    os.makedirs(gst_path, exist_ok=True)
-    qkgspo_file = qkg_path + "/" + dataset + '_' + str(topf) + ".json"
-    gstspo_file = gst_path + "/" + dataset + '_' + str(topf) + '_'  + str(topg) + ".json"
+    gst_path = cfg["compactsubg_path"]
+    os.makedirs(gst_path, exist_ok = True)
+    #compact gst subgraph file
+    gstspo_file = gst_path + dataset + '_' + str(topf) + '_'  + str(topg) + ".json"
 
-    f1 = open(qkgspo_file, "wb")
-    f2 = open(gstspo_file, "wb")
+    f1 = open(gstspo_file, "wb")
     for question in data:
         QuestionId = question["Id"]
         QuestionText = question["Question"]
-        print("\n\nQuestion Id-> ", QuestionId)
-        print("Question -> ", QuestionText)
         seeds_paths = {}
         add_spo_line = []
         score = {}
@@ -838,26 +822,18 @@ if __name__ == "__main__":
             score.update(ques_seeds_paths[QuestionId]['score'])
             add_spo_score.update({sta: float(score[sta]) for sta in score})
         GT = groundtruth[str(QuestionId)]['GT']
-        result, qkgspo, comgstspo = gst_GST.get_QKG_GST_from_spo(QuestionId, QuestionText, GT, connect, seeds_paths, add_spo_line, add_spo_score)
-        qkg = {
-                "question": QuestionText,
-                "id": QuestionId,
-                "subgraph": qkgspo
-            }
-        f1.write(json.dumps(qkg).encode("utf-8"))
-        f1.write("\n".encode("utf-8"))
+        result, qkgspo, comgstspo = gst_GST.get_QKG_GST_from_spo(QuestionId, QuestionText, GT, seeds_paths, add_spo_line, add_spo_score)
         gst = {
                 "question": QuestionText,
                 "id": QuestionId,
                 "subgraph": comgstspo
             }
-        f2.write(json.dumps(gst).encode("utf-8"))
-        f2.write("\n".encode("utf-8"))
+        f1.write(json.dumps(gst).encode("utf-8"))
+        f1.write("\n".encode("utf-8"))
         print("\n\nQuestion Id-> ", QuestionId)
         print("Question -> ", QuestionText)
         print(result)
-        fo.write(result)
-        fo.write('\n')
+
         result_number['qent'].append(float(result.split('|')[2]))
         result_number['corner'].append(float(result.split('|')[3]))
         result_number['qkgnode'].append(float(result.split('|')[4]))
@@ -872,45 +848,22 @@ if __name__ == "__main__":
         result_number['number_of_components_connect'].append(float(result.split('|')[16]))
         result_number['time'].append(float(result.split('|')[14]))
 
-    # fo.write(file)
-    fo.write('\n')
-    fo.write('Average  qent: ' + str(sum(result_number['qent']) / len(result_number['qent'])))
-    fo.write('\n')
-
-    fo.write('Average  corner: ' + str(sum(result_number['corner']) / len(result_number['corner'])))
-    fo.write('\n')
-
-    fo.write('Average  qkgnode: ' + str(sum(result_number['qkgnode']) / len(result_number['qkgnode'])))
-    fo.write('\n')
-
-    fo.write('Average  gstnode: ' + str(sum(result_number['gstnode']) / len(result_number['gstnode'])))
-    fo.write('\n')
-
-    fo.write('Average  qkgentity: ' + str(sum(result_number['qkgentity']) / len(result_number['qkgentity'])))
-    fo.write('\n')
-    fo.write('Average  completegstentity: ' + str(sum(result_number['completegstentity']) / len(result_number['completegstentity'])))
-    fo.write('\n')
-    fo.write('Average  qkgac: ' + str(sum(result_number['qkgac']) / len(result_number['qkgac'])))
-    fo.write('\n')
-    fo.write('number of questions with answer in qkg: ' + str(len([item for item in result_number['qkgac'] if item > 0])))
-    fo.write('\n')
-    fo.write('Average  gstac: ' + str(sum(result_number['gstac']) / len(result_number['gstac'])))
-    fo.write('\n')
-    fo.write('number of questions with answer in gst: ' + str(len([item for item in result_number['gstac'] if item > 0])))
-    fo.write('\n')
-    fo.write('Average  complete_gstac: ' + str(sum(result_number['complete_gstac']) / len(result_number['complete_gstac'])))
-    fo.write('\n')
-    fo.write('number of questions with answer in complete_gstac: ' + str(len([item for item in result_number['complete_gstac'] if item > 0])))
-    fo.write('\n')
-    fo.write('Average  number_of_components: ' + str(
+    print('Average  qent: ' + str(sum(result_number['qent']) / len(result_number['qent'])))
+    print('Average  corner: ' + str(sum(result_number['corner']) / len(result_number['corner'])))
+    print('Average  qkgnode: ' + str(sum(result_number['qkgnode']) / len(result_number['qkgnode'])))
+    print('Average  gstnode: ' + str(sum(result_number['gstnode']) / len(result_number['gstnode'])))
+    print('Average  qkgentity: ' + str(sum(result_number['qkgentity']) / len(result_number['qkgentity'])))
+    print('Average  completegstentity: ' + str(sum(result_number['completegstentity']) / len(result_number['completegstentity'])))
+    print('Average  qkgac: ' + str(sum(result_number['qkgac']) / len(result_number['qkgac'])))
+    print('number of questions with answer in qkg: ' + str(len([item for item in result_number['qkgac'] if item > 0])))
+    print('Average  gstac: ' + str(sum(result_number['gstac']) / len(result_number['gstac'])))
+    print('number of questions with answer in gst: ' + str(len([item for item in result_number['gstac'] if item > 0])))
+    print('Average  complete_gstac: ' + str(sum(result_number['complete_gstac']) / len(result_number['complete_gstac'])))
+    print('number of questions with answer in complete_gstac: ' + str(len([item for item in result_number['complete_gstac'] if item > 0])))
+    print('Average  number_of_components: ' + str(
         sum(result_number['number_of_components']) / len(result_number['number_of_components'])))
-    fo.write('\n')
-    fo.write('Average  number_of_components_connect: ' + str(
+    print('Average  number_of_components_connect: ' + str(
         sum(result_number['number_of_components_connect']) / len(result_number['number_of_components_connect'])))
-    fo.write('\n')
-    fo.write('Average  time: ' + str(sum(result_number['time']) / len(result_number['time'])))
-    fo.write('\n\n')
-    fo.close()
+    print('Average  time: ' + str(sum(result_number['time']) / len(result_number['time'])))
 
     f1.close()
-    f2.close()

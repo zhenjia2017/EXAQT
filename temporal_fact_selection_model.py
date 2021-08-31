@@ -1,7 +1,7 @@
-"""Script to get score for each temporal fact.
+"""Script to get score and rank of each temporal fact to generate question compact subgraph with temporal facts.
 """
 import truecase
-import os
+import pickle
 import json
 import globals
 import torch.nn as nn
@@ -139,9 +139,9 @@ if __name__ == "__main__":
     dataset = args.dataset
     topf = args.topf
     topg = args.topg
-    test = cfg["data_path"] + cfg["test_data"]
-    dev = cfg["data_path"] + cfg["dev_data"]
-    train = cfg["data_path"] + cfg["train_data"]
+    test = cfg["benchmark_path"] + cfg["test_data"]
+    dev = cfg["benchmark_path"] + cfg["dev_data"]
+    train = cfg["benchmark_path"] + cfg["train_data"]
 
     if dataset == 'test':
         in_file = test
@@ -150,13 +150,13 @@ if __name__ == "__main__":
     elif dataset == 'train':
         in_file = train
 
-    spo_file = cfg["data_path"] +  dataset + '_' + str(topf) + '_' + str(
-            topg) + ".json"
-    tempspo_file = cfg["data_path"] +   dataset + '_' + str(topf) + '_' + str(
-            topg) + '_temp.json'
-    dir = cfg["data_path"] +  dataset + '_' + str(topf) + '_' + str(topg) + '_temp_score'
+    #input files
+    spo_file = cfg["compactgst"] +  dataset + '_' + str(topf) + '_' + str(topg) + ".json"
+    tempspo_file = cfg["temcompactsubg_path"] + dataset + '_' + str(topf) + '_' + str(topg) + '_temp.json'
 
-    os.makedirs(dir, exist_ok=True)
+    #output file
+    tempspo_rank = cfg["temcompactsubg_path"] + dataset + '_' + str(topf) + '_' + str(topg) + '_temp_rank'
+
     device = torch.device("cuda")
     MODEL = BERTBaseUncased()
     model = torch.load(MODEL_PATH)
@@ -177,8 +177,7 @@ if __name__ == "__main__":
         for line in tqdm(f_in):
             line = json.loads(line)
             datas.append(line)
-    tempspo_score = dir + "/" + dataset + '_' + str(topf) + '_' + str(topg) + '_temp_score.json'
-    f1 = open(tempspo_score, "wb")
+
     for data in datas:
         sta_score = []
         ques_id = data["id"]
@@ -197,15 +196,16 @@ if __name__ == "__main__":
             for i, item in enumerate(sta_score):
                 tempspo_scores.append(str(i + 1) + '\t' + str(item[0]) + '\t' + str(item[1]) + '\n')
 
-        temp = {
-            "question": data["question"],
-            "id": ques_id,
-            "score": tempspo_scores
-                }
+        rank_fact_dic = {}
+        rank_fact_dic['question'] = data["question"]
+        rank_fact_dic['id'] = data["id"]
+        rank_fact_dic['rank'] = []
+        for i, item in enumerate(tempspo_scores):
+            if int(item.split('\t')[0]) <= 100:
+                rank_fact_dic['rank'].append(str(item.split('\t')[0]) + '\t' + str(item.split('\t')[1]) + '\t' + str(item.split('\t')[2]))
+        ranks.append(rank_fact_dic)
 
-        f1.write(json.dumps(temp).encode("utf-8"))
-        f1.write("\n".encode("utf-8"))
-    f1.close()
+    pickle.dump(ranks, open(tempspo_rank, 'wb'))
 
 
 

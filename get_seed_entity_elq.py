@@ -63,7 +63,7 @@ class EntityLinkELQMatch():
         return result
 
 def get_seed_entities_elq(ELQ, path, id, question):
-    elq_file = path + '/elq'
+    elq_file = path + '/elq.pkl'
     wiki_ids_file = path + '/wiki_ids_elq.txt'
     wiki_ids = set()
     elq_result = ELQ.get_entity_prediction(id, question)
@@ -75,24 +75,25 @@ def get_seed_entities_elq(ELQ, path, id, question):
         if qid is not None:
             wiki_ids.add((qid, score, text))
 
-    f1 = open(elq_file, 'wb')
-    pickle.dump(elq_result, f1)
-    f3 = open(wiki_ids_file, 'w', encoding='utf-8')
+    pickle.dump(elq_result, open(elq_file, 'wb'))
+    f1 = open(wiki_ids_file, 'w', encoding='utf-8')
     for item in wiki_ids:
-        f3.write(str(item[0]) + '\t' + str(item[1]) + '\t' + str(item[2]) + '\n')
+        f1.write(str(item[0]) + '\t' + str(item[1]) + '\t' + str(item[2]) + '\n')
     f1.close()
-    f3.close()
 
 if __name__ == "__main__":
     # prepare data...
     print("\n\nPrepare data and start...")
     cfg = globals.get_config(globals.config_file)
-    test = cfg["data_path"] + cfg["test_data"]
-    dev = cfg["data_path"] + cfg["dev_data"]
-    train = cfg["data_path"] + cfg["train_data"]
+    test = cfg["benchmark_path"] + cfg["test_data"]
+    dev = cfg["benchmark_path"] + cfg["dev_data"]
+    train = cfg["benchmark_path"] + cfg["train_data"]
+    #create the folder for saving required intermediate data for all questions
     os.makedirs(cfg["ques_path"], exist_ok=True)
     in_files = [train, dev, test]
-    elq_models_path = cfg["elq_models_path"]
+
+    # pretrained models, indices, and entity embeddings, please download them from https://github.com/facebookresearch/BLINK/tree/master/elq
+    elq_models_path = "path of elq models"
 
     ELQ = EntityLinkELQMatch(elq_models_path)
     for fil in in_files:
@@ -100,7 +101,9 @@ if __name__ == "__main__":
         for question in data:
             QuestionId = str(question["Id"])
             QuestionText = question["Question"]
+            #get truecase form of question
             QuestionText = truecase.get_true_case(QuestionText)
             path = cfg["ques_path"] + 'ques_' + str(QuestionId)
-            os.makedirs(path, exist_ok=True)
+            #create the folder for saving required intermediate data for each questions
+            os.makedirs(path, exist_ok = True)
             get_seed_entities_elq(ELQ, path, QuestionId, QuestionText)

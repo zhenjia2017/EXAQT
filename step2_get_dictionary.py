@@ -52,18 +52,18 @@ def replace_symbols(s):
     s = s.strip()
     return s
 
-def get_dictionary(gcn_file_path, subgraph_files):
-    fp_entity = gcn_file_path + '/entities.txt'
-    fp_entity_name = gcn_file_path + '/entity_name_map.pkl'
-    fp_date = gcn_file_path + '/dates.txt'
-    fp_relation = gcn_file_path + '/'+ '/relations.txt'
-    fp_trelation = gcn_file_path + '/'+ '/trelations.txt'
-    fp_word = gcn_file_path + '/words.txt'
-    fp_statement = gcn_file_path + '/statements.txt'
-    fp_category = gcn_file_path + '/categories.txt'
-    fp_signal = gcn_file_path + '/signals.txt'
-    fp_tempfact_pkl = gcn_file_path + '/tempfacts.pkl'
-    fp_tempfact = gcn_file_path + '/tempfacts.txt'
+def get_dictionary(answer_predict_path, subgraph_files):
+    fp_entity = answer_predict_path + 'entities.txt'
+    fp_entity_name = answer_predict_path + 'entity_name_map.pkl'
+    fp_date = answer_predict_path + 'dates.txt'
+    fp_relation = answer_predict_path + 'relations.txt'
+    fp_trelation = answer_predict_path + 'trelations.txt'
+    fp_word = answer_predict_path + 'words.txt'
+    fp_statement = answer_predict_path + 'statements.txt'
+    fp_category = answer_predict_path + 'categories.txt'
+    fp_signal = answer_predict_path + 'signals.txt'
+    fp_tempfact_pkl = answer_predict_path + 'tempfacts.pkl'
+    fp_tempfact = answer_predict_path + 'tempfacts.txt'
 
     entities = set()
     tempentities = list()
@@ -172,12 +172,11 @@ def get_dictionary(gcn_file_path, subgraph_files):
 if __name__ == "__main__":
 
     cfg = globals.get_config(globals.config_file)
-    pro_info = globals.ReadProperty.init_from_config().property
     topf = topg = topt = 25
-    gcn_file_path = cfg['gcn_file_path']
-    train_subgraph = gcn_file_path + "/train_subgraph.json"
-    dev_subgraph = gcn_file_path + "/dev_subgraph.json"
-    test_subgraph = gcn_file_path + "/test_subgraph.json"
+    answer_predict_path = cfg['answer_predict_path']
+    train_subgraph = answer_predict_path + "train_subgraph.json"
+    dev_subgraph = answer_predict_path + "dev_subgraph.json"
+    test_subgraph = answer_predict_path + "test_subgraph.json"
     subgraphs = [train_subgraph, dev_subgraph, test_subgraph]
-    get_dictionary(gcn_file_path, subgraphs)
+    get_dictionary(answer_predict_path, subgraphs)
 

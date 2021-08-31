@@ -55,7 +55,7 @@ PROI = "http://wikiba.se/ontology#WikibaseItem"
 PROQ = "http://wikiba.se/ontology#Quantity"
 PROT = "http://wikiba.se/ontology#Time"
 
-config_file = '../config.yml'
+config_file = '../config/config.yml'
 
 def get_config(config_path):
     """Read configuration and set variables.
@@ -90,7 +90,7 @@ class ReadProperty():
 
     @staticmethod
     def init_from_config():
-        property_file = config['data_path'] + config['property_file']
+        property_file = config['property_file']
         property = read_property(property_file)
         print("Property Dictionary loaded, length ", len(property))
         return ReadProperty(property)
