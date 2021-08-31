@@ -41,7 +41,7 @@ To install the required libraries, it is recommended to create a virtual environ
 
 Data
 ------
-The benchmark, preprocessed Wikidata facts for each question, all required intermediate data and our main results can be downloaded from [here](https://exaqt.mpi-inf.mpg.de/static/data.zip) (unzip and put it in the root folder of the cloned github repo; total data size around 40 GB): 
+The benchmark, preprocessed Wikidata facts for each question, all required intermediate data and our main results can be downloaded from [here](https://exaqt.mpi-inf.mpg.de/static/data.zip) (unzip and put it in the root folder of the cloned github repo; total data size around 40 GB).
 
 The data folder structure is as follows:
 
@@ -103,15 +103,14 @@ The code structure is as follows:
 	- `get_compact_subgraph.py` to compute GST and complete it.
 	- `get_GST.py` is a collection of functions for GST algorithm.
 	
-
 - Augment subgraphs with temporal facts
     - `temporal_fact_selection_model.py` to score temporal facts and sort them in descending order of a question relevance likelihood.
 	     
 - Predict answers with R-GCN
-	- `step1_get_relational_graph.py` to create relational graphs.
-	- `step2_get_dictionary.py` to generate dictionaries including words, entities, relations, categories, signals, temporal facts, etc. 
-	- `step3_get_pretrained_embedding.py` to generate pretrained embeddings for words, entities, relations, temporal facts, etc.
-    - `step4_train_eva_rgcn.py` to train R-GCN model and evaluate the model on test dataset.
+	- `get_relational_graph.py` to create relational graphs.
+	- `get_dictionary.py` to generate dictionaries including words, entities, relations, categories, signals, temporal facts, etc. 
+	- `get_pretrained_embedding.py` to generate pretrained embeddings for words, entities, relations, temporal facts, etc.
+    - `train_eva_rgcn.py` to train R-GCN model and evaluate the model on test dataset.
     - `model.py` is a R-GCN model class in answer prediction.
     - `time_encoder.py` is a positional time encoding function.
 	- `util.py` is a collection of frequent functions in answer prediction with R-GCN.
@@ -119,8 +118,10 @@ The code structure is as follows:
 	- `script_listscore.py` is a collection of evaluation functions. 
 
 - Other programs
-    - globals.py to generate global configuration variables.
+    - `globals.py` to generate global configuration variables.
 
+Graph construction and answer prediction
+------
 To reproduce the result, (1) download data and pre-trained model, and save them in the root folder of the cloned github repo, and (2) make sure the path variables in the config.yml file under your own settings.
 
 Then run the following commands:
