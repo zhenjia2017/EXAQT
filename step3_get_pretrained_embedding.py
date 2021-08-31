@@ -508,7 +508,6 @@ def get_pretrained_embedding_from_wiki2vec(MODEL_FILE, answer_predict_path):
 
 if __name__ == "__main__":
     cfg = globals.get_config(globals.config_file)
-    topf = topg = topt = 25
     answer_predict_path = cfg['answer_predict_path']
     MODEL_FILE = cfg['model_path'] + cfg['wikipedia2vec']
     get_pretrained_embedding_from_wiki2vec(MODEL_FILE, answer_predict_path)

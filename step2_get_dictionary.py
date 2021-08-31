@@ -170,9 +170,7 @@ def get_dictionary(answer_predict_path, subgraph_files):
     print("#tkgfacts = %s" % str(len(tkgfact2id)))
 
 if __name__ == "__main__":
-
     cfg = globals.get_config(globals.config_file)
-    topf = topg = topt = 25
     answer_predict_path = cfg['answer_predict_path']
     train_subgraph = answer_predict_path + "train_subgraph.json"
     dev_subgraph = answer_predict_path + "dev_subgraph.json"

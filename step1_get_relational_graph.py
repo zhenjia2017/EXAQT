@@ -454,11 +454,16 @@ if __name__ == "__main__":
     import argparse
     argparser = argparse.ArgumentParser()
     argparser.add_argument('-d', '--dataset', type=str, default='dev')
+    argparser.add_argument('-f', '--topf', type=int, default=25)
+    argparser.add_argument('-g', '--topg', type=int, default=25)
+    argparser.add_argument('-t', '--topt', type=int, default=25)
     cfg = globals.get_config(globals.config_file)
     pro_info = globals.ReadProperty.init_from_config().property
     args = argparser.parse_args()
     dataset = args.dataset
-    topf = topg = topt = 25
+    topf = args.topf
+    topg = args.topg
+    topt = args.topt
 
     get_subgraph(dataset, pro_info, cfg, topf, topg, topt)
 

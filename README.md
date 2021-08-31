@@ -57,7 +57,8 @@ data
 ├── dictionaries
 ├── files
     ├── ques_1
-	 ...	
+    ├── ques_2
+	├── ...	
 	└── ques_16181
 ├── model
 ├── temcompactgst
@@ -65,7 +66,7 @@ data
     ├── dev_25_25_temp_rank
     ├── test_25_25_temp.json
     ├── test_25_25_temp_rank
-	├── train_25_25_temp.json
+    ├── train_25_25_temp.json
     └── train_25_25_temp_rank
 ├── TimeQuestions
 	├── dev.json
@@ -89,23 +90,25 @@ Code
  
 The code structure is as follows:
     
-- NERD 
+- NERD for question entities 
     - `get_seed_entity_elq.py` to get seed entity from ELQ and entity linking results.
-    - To run the program, please find the usage of ELQ from the following [link](https://github.com/facebookresearch/BLINK/tree/master/elq), and download the pretrained models, indices, and entity embeddings for running ELQ.
+    - To run the program, please find the usage of [ELQ](https://github.com/facebookresearch/BLINK/tree/master/elq), and download the pretrained models, indices, and entity embeddings for running ELQ.
     - `get_seed_entity_tagme.py` to get seed entity from TagMe and entity linking results.
     
-- Computing compact subgraph
-    - `relevant_fact_selection_model.py` to score facts using the pre-trained fine-tune BERT model.
+- Apply the fine-tuned BERT model as classifer
+    - `relevant_fact_selection_model.py` to score facts and sort them in descending order of a question relevance likelihood.
+    
+- Compute compact subgraph
 	- `get_compact_subgraph.py` to compute GST and complete it.
 	- `get_GST.py` is a collection of functions for GST algorithm.
 	- `engine.py` to fine-tune bert model.
 
-- Augmenting subgraphs with temporal facts
-    - `temporal_fact_selection_model.py` to score temporal facts using the pre-trained fine-tune BERT model.
+- Augment subgraphs with temporal facts
+    - `temporal_fact_selection_model.py` to score temporal facts and sort them in descending order of a question relevance likelihood.
 	     
-- Predicting answers with R-GCN
-	- `step1_get_relational_graph.py` to generate relational graph.
-	- `step2_get_dictionary.py` to create dictionaries including words, entities, relations, categories, signals, temporal facts, etc. 
+- Predict answers with R-GCN
+	- `step1_get_relational_graph.py` to create relational graphs.
+	- `step2_get_dictionary.py` to generate dictionaries including words, entities, relations, categories, signals, temporal facts, etc. 
 	- `step3_get_pretrained_embedding.py` to generate pretrained embeddings for words, entities, relations, temporal facts, etc.
     - `step4_train_eva_rgcn.py` to train R-GCN model and evaluate the model on test dataset.
     - `model.py` is a R-GCN model class in answer prediction.
@@ -134,22 +137,22 @@ Score question-relevance facts:
 
 Compute compact subgraphs:
 
-    python get_compact_subgraph.py -d train -f 25 -g 25
-    python get_compact_subgraph.py -d dev -f 25 -g 25
-    python get_compact_subgraph.py -d test -f 25 -g 25
+    python get_compact_subgraph.py -d train
+    python get_compact_subgraph.py -d dev
+    python get_compact_subgraph.py -d test
 
 
 Score temporal facts for augmenting subgraphs:
 
-    python temporal_fact_selection_model.py -d train -f 25 -g 25
-    python temporal_fact_selection_model.py -d dev -f 25 -g 25
-    python temporal_fact_selection_model.py -d test -f 25 -g 25
+    python temporal_fact_selection_model.py -d train
+    python temporal_fact_selection_model.py -d dev
+    python temporal_fact_selection_model.py -d test
 
 Train answer prediction model and evaluate:
 
-    python step1_get_relational_graph.py -d train -f 25 -g 25 -t 25
-    python step1_get_relational_graph.py -d dev -f 25 -g 25 -t 25
-    python step1_get_relational_graph.py -d test -f 25 -g 25 -t 25
+    python step1_get_relational_graph.py -d train
+    python step1_get_relational_graph.py -d dev
+    python step1_get_relational_graph.py -d test
     python step2_get_dictionary.py
     python step3_get_pretrained_embedding.py
     python step4_train_eva_rgcn.py -p exaqt
