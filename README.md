@@ -97,11 +97,12 @@ The code structure is as follows:
     
 - Apply the fine-tuned BERT model as classifer
     - `relevant_fact_selection_model.py` to score facts and sort them in descending order of a question relevance likelihood.
+    - `engine.py` to fine tune BERT model.
     
 - Compute compact subgraph
 	- `get_compact_subgraph.py` to compute GST and complete it.
 	- `get_GST.py` is a collection of functions for GST algorithm.
-	- `engine.py` to fine-tune bert model.
+	
 
 - Augment subgraphs with temporal facts
     - `temporal_fact_selection_model.py` to score temporal facts and sort them in descending order of a question relevance likelihood.
