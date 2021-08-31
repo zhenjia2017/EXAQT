@@ -1,16 +1,26 @@
-#question seed entities and KG facts path
-ques_path: '../files/'
-
 #data path
 data_path: '../data/'
 
-#model path for saving r-gcn models, etc
-bert_model_path: '../model/bert_base_cased/'
-model_path: '../model/'
-elq_models_path: '../elq/'
+#model path
+model_path: '../data/model/'
 
-#dictionaries and pretrained embedding files path
-gcn_file_path: '../gcn_files/'
+#benchmark path
+benchmark_path: '../data/TimeQuestions/'
+
+#question seed entities and KG facts path
+ques_path: '../data/files/'
+
+#connect path file of seed pair
+connect_path: '../data/connectivity/'
+
+#compact subgraph path
+compactsubg_path: '../data/compactgst/'
+
+#compact subgraph with temporal facts path
+temcompactsubg_path: '../data/temcompactgst/'
+
+#relational graphs, dictionaries and pretrained embedding files path
+answer_predict_path: '../data/dictionaries/'
 
 #benchmark file
 train_data: 'train.json'
@@ -20,8 +30,8 @@ test_data: 'test.json'
 #property file
 property_file: 'wikidata_property_dictionary.json'
 
-#Wikipedia2Vec model path
-wikipedia2vec: '../model/wikipedia2vec_trained'
+#Wikipedia2Vec model
+wikipedia2vec: 'wikipedia2vec_trained'
 
 #Number of Facts to be considered
 top_f: 25
