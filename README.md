@@ -61,6 +61,7 @@ data
     ├── ...
     └── ques_16181
 ├── model
+├── result
 ├── temcompactgst
     ├── train_25_25_temp.json
     ├── train_25_25_temp_rank
@@ -80,6 +81,7 @@ data
  - ./dictionaries: relational graphs, dictionaries and pretrained embedding files used in answer prediction
  - ./files: preprocessed Wikidata facts and intermediate data for each question including seed entity, scored facts, quasi question graph, cornerstones and gst graph files  
  - ./model: pretrained fine-tune BERT models and wikipedia2vec model
+ - ./result: answer prediction evaluation results on dev and test data set
  - ./temcompactgst: completed GST subgraphs with temporal facts and ranked temporal facts files
  - ./TimeQuestions: benchmark including train, dev and test 
  - ./wikidata\_property\_dictionary.json: Wikidata properties with type, label and alias
@@ -128,7 +130,7 @@ Then run the following commands:
 
 Step 1: NERD
 
-    python get_seed_entity_elq.py
+    python get_seed_entity_elq.py (Note that the program should run under directory of BLINK-master after building ELQ environment)
     python get_seed_entity_tagme.py
 
 Step 2: Score and rank question-relevance facts
