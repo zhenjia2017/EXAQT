@@ -69,7 +69,7 @@ data
     ├── test_25_25_temp.json
     └── test_25_25_temp_rank
 ├── TimeQuestions
-	├── train.json
+    ├── train.json
     ├── dev.json
     └── test.json
 └── wikidata_property_dictionary.json
@@ -124,38 +124,37 @@ To reproduce the result, (1) download data and pre-trained model, and save them 
 
 Then run the following commands:
 
-NERD:
+Step 1: NERD
 
     python get_seed_entity_elq.py
     python get_seed_entity_tagme.py
 
-Score question-relevance facts:
+Step 2: Score and rank question-relevance facts
 
     python relevant_fact_selection_model.py -d train 
     python relevant_fact_selection_model.py -d dev
     python relevant_fact_selection_model.py -d test
 
-Compute compact subgraphs:
+Step 3: Compute compact subgraph
 
     python get_compact_subgraph.py -d train
     python get_compact_subgraph.py -d dev
     python get_compact_subgraph.py -d test
 
-
-Score temporal facts for augmenting subgraphs:
+Step 4: Score and rank question-relevance temporal facts
 
     python temporal_fact_selection_model.py -d train
     python temporal_fact_selection_model.py -d dev
     python temporal_fact_selection_model.py -d test
 
-Train answer prediction model and evaluate:
+Step 5: Train answer prediction model and evaluate on test
 
-    python step1_get_relational_graph.py -d train
-    python step1_get_relational_graph.py -d dev
-    python step1_get_relational_graph.py -d test
-    python step2_get_dictionary.py
-    python step3_get_pretrained_embedding.py
-    python step4_train_eva_rgcn.py -p exaqt
+    python get_relational_graph.py -d train
+    python get_relational_graph.py -d dev
+    python get_relational_graph.py -d test
+    python get_dictionary.py
+    python get_pretrained_embedding.py
+    python train_eva_rgcn.py -p exaqt
 
 ### Contributors
 If you use this code, please cite:
