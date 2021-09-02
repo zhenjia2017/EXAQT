@@ -42,6 +42,19 @@ To install the required libraries, it is recommended to create a virtual environ
 TimeQuestions
 ------
 The benchmark can be downloaded from [here](https://qa.mpi-inf.mpg.de/exaqt/TimeQuestions.zip). 
+- TimeQuestions: 
+    - 16,181 questions, each containing:
+        - "Id": question id
+        - "Question": question text in lowercase
+        - "Temporal signal": temporal signals including OVERLAP, AFTER, BEFORE, START, FINISH, ORDINAL, No signal
+        - "Temporal question type": temporal categories including Explicit, Implicit, Ordinal, Temp.Ans
+        - "Answer": ground truth answer including answer type, Wikidata Qid,  Wikidata label, Wikipedia URL
+        - "Data source": original dataset
+        - "Question creation date": original dataset publication date 
+    - Train, dev, and test datasets are in the 60:20:20 ratio.
+        - train.json
+        - dev.json
+        - test.json
 
 ###Creation of TimeQuestions
 
