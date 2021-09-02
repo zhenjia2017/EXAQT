@@ -20,10 +20,7 @@ def train_fn(data_loader, model, optimizer, device, scheduler):
         targets = targets.to(device, dtype = torch.float)
         
         optimizer.zero_grad()
-        #print("output shape ", targets.view(-1, 1))
         outputs = model(ids=ids, mask=mask, token_type_ids=token_type_ids)
-        #print("output shape ", targets.view(-1,1))
-        
         loss = loss_fn(outputs, targets)
         loss.backward()
         optimizer.step()
