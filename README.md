@@ -39,12 +39,18 @@ To install the required libraries, it is recommended to create a virtual environ
 
 
 
+TimeQuestions
+------
+The benchmark can be downloaded from [here](https://qa.mpi-inf.mpg.de/TimeQuestions.zip). 
+
+###Creation of TimeQuestions
+
+
 Data
 ------
-The benchmark, preprocessed Wikidata facts for each question, all required intermediate data and our main results can be downloaded from [here](https://exaqt.mpi-inf.mpg.de/static/data.zip) (unzip and put it in the root folder of the cloned github repo; total data size around 40 GB).
+The preprocessed Wikidata facts for each question, pretrained models, all required intermediate data and our main results can be downloaded from [here](https://qa.mpi-inf.mpg.de/exaqt-supp-data.zip) (unzip and put it in the root folder of the cloned github repo; total data size around 40 GB).
 
 The data folder structure is as follows:
-
 
 ```
 data
@@ -69,10 +75,6 @@ data
     ├── dev_25_25_temp_rank
     ├── test_25_25_temp.json
     └── test_25_25_temp_rank
-├── TimeQuestions
-    ├── train.json
-    ├── dev.json
-    └── test.json
 └── wikidata_property_dictionary.json
 ```
 
@@ -82,8 +84,7 @@ data
  - ./files: preprocessed Wikidata facts and intermediate data for each question including seed entity, scored facts, quasi question graph, cornerstones and gst graph files  
  - ./model: pretrained fine-tune BERT models and wikipedia2vec model
  - ./result: answer prediction evaluation results on dev and test data set
- - ./temcompactgst: completed GST subgraphs with temporal facts and ranked temporal facts files
- - ./TimeQuestions: benchmark including train, dev and test 
+ - ./temcompactgst: completed GST subgraphs with temporal facts and ranked temporal facts files 
  - ./wikidata\_property\_dictionary.json: Wikidata properties with type, label and alias
 
 
