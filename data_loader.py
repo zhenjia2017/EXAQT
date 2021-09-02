@@ -3,7 +3,7 @@ import numpy as np
 from tqdm import tqdm
 
 def replace_symbols(s):
-    #s = s.replace('<entity>', ' ')
+    
     s = s.replace('(', ' ')
     s = s.replace(')', ' ')
     s = s.replace('[', ' ')
