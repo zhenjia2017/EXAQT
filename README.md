@@ -41,14 +41,14 @@ To install the required libraries, it is recommended to create a virtual environ
 
 TimeQuestions
 ------
-The benchmark can be downloaded from [here](https://qa.mpi-inf.mpg.de/TimeQuestions.zip). 
+The benchmark can be downloaded from [here](https://qa.mpi-inf.mpg.de/exaqt/TimeQuestions.zip). 
 
 ###Creation of TimeQuestions
 
 
 Data
 ------
-The preprocessed Wikidata facts for each question, pretrained models, all required intermediate data and our main results can be downloaded from [here](https://qa.mpi-inf.mpg.de/exaqt-supp-data.zip) (unzip and put it in the root folder of the cloned github repo; total data size around 40 GB).
+The preprocessed Wikidata facts for each question, pretrained models, all required intermediate data and our main results can be downloaded from [here](https://qa.mpi-inf.mpg.de/exaqt/exaqt-supp-data.zip) (unzip and put it in the root folder of the cloned github repo; total data size around 40 GB).
 
 The data folder structure is as follows:
 
