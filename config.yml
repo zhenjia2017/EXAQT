@@ -33,11 +33,11 @@ property_file: 'wikidata_property_dictionary.json'
 #Wikipedia2Vec model
 wikipedia2vec: 'wikipedia2vec_trained'
 
-#Number of Facts to be considered
+#Default number of Facts to be considered 
 top_f: 25
 
-#Number of GSTs to be considered
+#Default number of GSTs to be considered
 top_g: 25
 
-#Number of Temporal facts to be considered
+#Default number of Temporal facts to be considered
 top_t: 25
