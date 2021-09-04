@@ -1,7 +1,20 @@
 EXAQT + TimeQuestions
 ============
 
-This is the implementation of EXAQT described in CIKM 2021 paper Complex Temporal Question Answering on Knowledge Graphs.
+Description
+------
+This repository contains the code and data for our CIKM'21 full paper. In this paper, we present EXAQT, the first end-to-end system for answering complex temporal questions that have multiple entities and predicates, and associated temporal conditions. EXAQT answers natural language questions over KGs in two stages. The first step computes question-relevant compact subgraphs within the KG, and judiciously enhances them with pertinent temporal facts, using Group Steiner Trees and fine-tuned BERT models. The second step constructs relational graph convolutional networks (R-GCNs) from the first step’s output, and enhances the R-GCNs with time-aware
+entity embeddings and attention over temporal relations. 
+
+<center><img src="kg.png"  alt="kg" width=80%  /></center>
+
+*Wikidata excerpt showing the relevant KG zone
+for the question "where did obama’s children study when he
+became president?" with answer Sidwell Friends School.*
+
+For more details see our paper: [Complex Temporal Question Answering on Knowledge Graphs](https://exaqt.mpi-inf.mpg.de) and visit our project website: https://exaqt.mpi-inf.mpg.de.
+
+If you use this code, please cite:
 
 Setup 
 ------
@@ -37,31 +50,21 @@ To install the required libraries, it is recommended to create a virtual environ
     pip install --upgrade pip
     pip install -r requirements.txt
 
-
-
 TimeQuestions
 ------
-The benchmark can be downloaded from [here](https://qa.mpi-inf.mpg.de/exaqt/TimeQuestions.zip). 
-- TimeQuestions: 
-    - 16,181 questions, each containing:
-        - "Id": question id
-        - "Question": question text in lowercase
-        - "Temporal signal": temporal signals including OVERLAP, AFTER, BEFORE, START, FINISH, ORDINAL, No signal
-        - "Temporal question type": temporal categories including Explicit, Implicit, Ordinal, Temp.Ans
-        - "Answer": ground truth answer including answer type, Wikidata Qid,  Wikidata label, Wikipedia URL
-        - "Data source": original dataset
-        - "Question creation date": original dataset publication date 
-    - Train, dev, and test datasets are in the 60:20:20 ratio.
-        - train.json
-        - dev.json
-        - test.json
-
-###Creation of TimeQuestions
-
+The benchmark can be downloaded from [here](https://qa.mpi-inf.mpg.de/TimeQuestions.zip). TimeQuestions contains 16,181 questions. The content of each question includes:
+        
+ * "Id": question id
+ * "Question": question text in lowercase
+ * "Temporal signal": OVERLAP, AFTER, BEFORE, START, FINISH, ORDINAL, No signal
+ * "Temporal question type": temporal categories including Explicit, Implicit, Ordinal, Temp.Ans
+ * "Answer": ground truth answer including answer type, Wikidata Qid,  Wikidata label, and Wikipedia URL
+ * "Data source": original dataset
+ * "Question creation date": original dataset publication date
 
 Data
 ------
-The preprocessed Wikidata facts for each question, pretrained models, all required intermediate data and our main results can be downloaded from [here](https://qa.mpi-inf.mpg.de/exaqt/exaqt-supp-data.zip) (unzip and put it in the root folder of the cloned github repo; total data size around 40 GB).
+The preprocessed Wikidata facts for each question, pretrained models, all required intermediate data and our main results can be downloaded from [here](https://qa.mpi-inf.mpg.de/exaqt-supp-data.zip) (unzip and put it in the root folder of the cloned github repo; total data size around 40 GB).
 
 The data folder structure is as follows:
 
