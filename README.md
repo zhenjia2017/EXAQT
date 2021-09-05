@@ -83,24 +83,32 @@ data
     ├── ...
     └── ques_16181
 ├── model
+	├── phase1_model.bin
+    ├── phase2_model.bin
+    └── wikipedia2vec_trained
 ├── result
 ├── temcompactgst
     ├── train_25_25_temp.json
-    ├── train_25_25_temp_rank
+    ├── train_25_25_temp_rank.pkl
     ├── dev_25_25_temp.json
-    ├── dev_25_25_temp_rank
+    ├── dev_25_25_temp_rank.pkl
     ├── test_25_25_temp.json
-    └── test_25_25_temp_rank
+    └── test_25_25_temp_rank.pkl
+├── TimeQuestions
+├── phase1_relevant_fact_selection_trainset.csv
+├── phase2_temporal_fact_selection_trainset.csv
 └── wikidata_property_dictionary.json
 ```
 
  - ./compactgst: completed GST subgraph for each question
  - ./connectivity: preprocessed connectivity data including shortest connect path of seed pairs for each question
- - ./dictionaries: relational graphs, dictionaries and pretrained embedding files used in answer prediction
+ - ./dictionaries: relational graphs, dictionaries, and pretrained embedding files used in answer prediction
  - ./files: preprocessed Wikidata facts and intermediate data for each question including seed entity, scored facts, quasi question graph, cornerstones and gst graph files  
  - ./model: pretrained fine-tune BERT models and wikipedia2vec model
- - ./result: answer prediction evaluation results on dev and test data set
+ - ./result: answer prediction evaluation results on test data set
  - ./temcompactgst: completed GST subgraphs with temporal facts and ranked temporal facts files 
+ - ./phase1\_relevant\_fact\_selection\_trainset.csv: training data of fine-tuning BERT model for finding question-relevant KG facts 
+ - ./phase2\_temporal\_fact\_selection\_trainset.csv: training data of fine-tuning BERT model for finding question-relevance of temporal facts
  - ./wikidata\_property\_dictionary.json: Wikidata properties with type, label and alias
 
 
@@ -109,33 +117,34 @@ Code
  
 The code structure is as follows:
     
-- NERD for question entities 
+- NERD 
     - `get_seed_entity_elq.py` to get seed entity from ELQ and entity linking results.
     - To run the program, please find the usage of [ELQ](https://github.com/facebookresearch/BLINK/tree/master/elq), and download the pretrained models, indices, and entity embeddings for running ELQ.
     - `get_seed_entity_tagme.py` to get seed entity from TagMe and entity linking results.
     
-- Apply the fine-tuned BERT model as classifer
-    - `relevant_fact_selection_model.py` to score facts and sort them in descending order of a question relevance likelihood.
-    - `engine.py` to fine tune BERT model.
+- Answer Graph
+	- Apply the fine-tuned BERT model as classifer
+    	- `relevant_fact_selection_model.py` to score facts and sort them in descending order of a question relevance likelihood.
+    	- `engine.py` to fine tune BERT model.
     
-- Compute compact subgraph
-	- `get_compact_subgraph.py` to compute GST and complete it.
-	- `get_GST.py` is a collection of functions for GST algorithm.
+	- Compute compact subgraph
+		- `get_compact_subgraph.py` to compute GST and complete it.
+		- `get_GST.py` is a collection of functions for GST algorithm.
 	
-- Augment subgraphs with temporal facts
-    - `temporal_fact_selection_model.py` to score temporal facts and sort them in descending order of a question relevance likelihood.
+	- Augment subgraphs with temporal facts
+    	- `temporal_fact_selection_model.py` to score temporal facts and sort them in descending order of a question relevance likelihood.
 	     
-- Predict answers with R-GCN
+- Answer Predict
 	- `get_relational_graph.py` to create relational graphs.
 	- `get_dictionary.py` to generate dictionaries including words, entities, relations, categories, signals, temporal facts, etc. 
 	- `get_pretrained_embedding.py` to generate pretrained embeddings for words, entities, relations, temporal facts, etc.
-    - `train_eva_rgcn.py` to train R-GCN model and evaluate the model on test dataset.
+    - `train_eva_rgcn.py` to train R-GCN model and evaluate the model.
     - `model.py` is a R-GCN model class in answer prediction.
     - `time_encoder.py` is a positional time encoding function.
 	- `util.py` is a collection of frequent functions in answer prediction with R-GCN.
 	- `data_loader.py` is a data loader function in answer prediction.
 	- `script_listscore.py` is a collection of evaluation functions. 
-
+	- `evaluate.py` to evaluate the model on test dataset.
 - Other programs
     - `globals.py` to generate global configuration variables.
 
