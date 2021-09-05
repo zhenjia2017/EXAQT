@@ -1,3 +1,5 @@
+"""Implement the GST algorithm"""
+
 import networkx as nx
 from heapq import heappush,heappop,heapify
 import math
