@@ -83,7 +83,7 @@ data
     ├── ...
     └── ques_16181
 ├── model
-	├── phase1_model.bin
+    ├── phase1_model.bin
     ├── phase2_model.bin
     └── wikipedia2vec_trained
 ├── result
