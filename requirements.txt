@@ -10,5 +10,3 @@ torch==1.8.1
 numpy==1.19.2
 PyYAML==5.4.1
 scikit_learn==0.24.2
-
-
