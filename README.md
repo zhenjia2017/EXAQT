@@ -15,6 +15,7 @@ became president?" with answer Sidwell Friends School.*
 For more details see our paper: [Complex Temporal Question Answering on Knowledge Graphs](https://exaqt.mpi-inf.mpg.de) and visit our project website: https://exaqt.mpi-inf.mpg.de.
 
 If you use this code, please cite:
+Zhen Jia, Soumajit Pramanik, Rishiraj Saha Roy, Gerhard Weikum. (2021). Complex Temporal Question Answering on Knowledge Graphs. CIKM.
 
 Setup 
 ------
