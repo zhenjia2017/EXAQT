@@ -12,10 +12,17 @@ entity embeddings and attention over temporal relations.
 for the question "where did obama’s children study when he
 became president?" with answer Sidwell Friends School.*
 
-For more details see our paper: [Complex Temporal Question Answering on Knowledge Graphs](https://exaqt.mpi-inf.mpg.de) and visit our project website: https://exaqt.mpi-inf.mpg.de.
+For more details see our paper: [Complex Temporal Question Answering on Knowledge Graphs](https://arxiv.org/abs/2109.08935) and visit our project website: https://exaqt.mpi-inf.mpg.de.
 
 If you use this code, please cite:
-Zhen Jia, Soumajit Pramanik, Rishiraj Saha Roy, Gerhard Weikum. (2021). Complex Temporal Question Answering on Knowledge Graphs. CIKM.
+```bibtex
+@article{jia2021complex,
+  title={Complex Temporal Question Answering on Knowledge Graphs},
+  author={Jia, Zhen and Pramanik, Soumajit and Roy, Rishiraj Saha and Weikum, Gerhard},
+  journal={arXiv preprint arXiv:2109.08935},
+  year={2021}
+}
+```
 
 Setup 
 ------
@@ -187,9 +194,12 @@ Step 5: Train answer prediction model and evaluate on test
     python get_pretrained_embedding.py
     python train_eva_rgcn.py -p exaqt
 
-### Contributors
+<!-- ### Contributors
 If you use this code, please cite:
 Zhen Jia, Soumajit Pramanik, Rishiraj Saha Roy, Gerhard Weikum. (2021). Complex Temporal Question Answering on Knowledge Graphs. CIKM.
-```
-
-```
+@article{jia2021complex,
+  title={Complex Temporal Question Answering on Knowledge Graphs},
+  author={Jia, Zhen and Pramanik, Soumajit and Roy, Rishiraj Saha and Weikum, Gerhard},
+  journal={arXiv preprint arXiv:2109.08935},
+  year={2021}
+} -->
