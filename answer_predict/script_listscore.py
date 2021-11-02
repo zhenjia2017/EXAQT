@@ -22,7 +22,7 @@ def get_hitsmetric(kb_entities, dist_kb, topk, answers):
         if len(kb_entities) == 0:
             hits5 = 1.0  # hits@5
         else:
-            hits5 = 1.0  # hits@5
+            hits5 = 0.0  # hits@5
     else:
         for j in range(0, len(sorted_l)):
             if j < topk:
@@ -122,7 +122,7 @@ def cal_eval_metric(best_pred, preds, answers):
         if total == 0:
             return 1.0, 1.0, 1.0, 1.0  # precision, recall, f1, hits
         else:
-            return 0.0, 1.0, 0.0, 1.0  # precision, recall, f1, hits
+            return 0.0, 1.0, 0.0, 0.0  # precision, recall, f1, hits
     else:
         hits = float(best_pred in answers)
         if total == 0:
