@@ -32,51 +32,6 @@ def get_hitsmetric(kb_entities, dist_kb, topk, answers):
 
     return hits5, best5_pred
 
-# presicion@1 recall@1 f1@1
-def get_prfmetric(kb_pred_file, topk):
-    pred_list = []
-    with open(kb_pred_file) as f_kb:
-        line_id = 0
-        for line_kb in tqdm(zip(f_kb)):
-            line_id += 1
-            line_kb = json.loads(line_kb[0])
-            answers = set([answer.lower() for answer in line_kb['answers']])
-            dist_kb = line_kb['dist']
-            kb_entities = set(dist_kb.keys())
-    for entity in kb_entities:
-        pred_list.append((entity, dist_kb[entity]))
-    rank = 0
-    pred_list1 = []
-    for j in range(0, len(pred_list)):
-        if j > 0:
-            if pred_list[j][2] < pred_list[j - 1][2]:
-                rank += 1
-        pred_list1.append((pred_list[j][0], rank))
-    answers_lower = []
-    for item in answers:
-        answers_lower.append(item.lower())
-    correct, total = 0.0, 0.0
-    pred_list = pred_list1
-    for i in range(0, len(pred_list)):
-        if pred_list[i][1] <= 1:  # rank 1
-            ans1 = pred_list[i][0]
-            if 'T00:00:00Z' in ans1: ans1 = ans1.replace('T00:00:00Z', '')
-            if ans1.lower() in answers_lower:
-                correct += 1
-            total += 1
-    if len(answers_lower) == 0:
-        if total == 0:
-            return 1.0, 1.0, 1.0  # precision, recall, f1
-        else:
-            return 0.0, 1.0, 0.0  # precision, recall, f1
-    else:
-        if total == 0:
-            return 1.0, 0.0, 0.0  # precision, recall, f1
-        else:
-            precision, recall = correct / total, correct / len(answers_lower)
-            f1 = 2.0 / (1.0 / precision + 1.0 / recall) if precision != 0 and recall != 0 else 0.0
-            return precision, recall, f1
-
 def get_mmr_metric(kb_entities, dist_kb, topk, answers):
     pred_list = []
     for entity in kb_entities:
