@@ -81,6 +81,70 @@ def get_model(cfg, num_kb_relation, num_entities, num_vocab, num_categories, num
 
     return my_model
 
+def evaluate_result_for_category(benchmark_file, test_re_fp, out_file):
+    fo = open(out_file, 'w', encoding='utf-8')
+    result = open(test_re_fp, 'r', encoding='utf-8')
+    res_lines = result.readlines()
+    result_number = {}
+
+    with open(benchmark_file, encoding='utf-8') as json_data:
+        list = json.load(json_data)
+        json_data.close()
+
+    type_dic = {'Explicit': [], 'Implicit': [], 'Temp.Ans': [], 'Ordinal': []}
+    p1_res_dic = {'Explicit': [], 'Implicit': [], 'Temp.Ans': [], 'Ordinal': []}
+    h5_res_dic = {'Explicit': [], 'Implicit': [], 'Temp.Ans': [], 'Ordinal': []}
+    mrr_res_dic = {'Explicit': [], 'Implicit': [], 'Temp.Ans': [], 'Ordinal': []}
+
+    count = 0
+    for item in list:
+        source = item["Data source"]
+        types = item["Type"]
+        id = str(item["Id"])
+        for type in types:
+            type_dic[type].append(id)
+        count += 1
+
+    for line in res_lines:
+        if '|' in line and len(line.split('|')) > 3:
+            # print (line)
+            id = line.split('|')[0]
+            p1 = float(line.split('|')[1])
+            h5 = float(line.split('|')[2])
+            mrr = float(line.split('|')[3])
+
+            for key, value in type_dic.items():
+                if id in value:
+                    p1_res_dic[key].append(p1)
+                    h5_res_dic[key].append(h5)
+                    mrr_res_dic[key].append(mrr)
+
+    for key in p1_res_dic.keys():
+        if key not in result_number:
+            result_number[key] = {}
+        result_number[key]['p1'] = str(round(sum(p1_res_dic[key]) / len(p1_res_dic[key]), 3))
+        print('Average  hits1: ', str(sum(p1_res_dic[key]) / len(p1_res_dic[key])))
+
+    for key in mrr_res_dic.keys():
+        print(key)
+        result_number[key]['mrr'] = str(round(sum(mrr_res_dic[key]) / len(mrr_res_dic[key]), 3))
+        print('Average  mrr: ', str(sum(mrr_res_dic[key]) / len(mrr_res_dic[key])))
+
+    for key in h5_res_dic.keys():
+        print(key)
+        result_number[key]['hits5'] = str(round(sum(h5_res_dic[key]) / len(h5_res_dic[key]), 3))
+
+        print('Average  hits5: ', str(sum(h5_res_dic[key]) / len(h5_res_dic[key])))
+
+    for key in result_number:
+        fo.write(key + '|')
+        for item in result_number[key]:
+            fo.write(result_number[key][item])
+            fo.write('|')
+    fo.write('\n')
+    fo.close()
+
+
 if __name__ == "__main__":
     import argparse
     argparser = argparse.ArgumentParser()
@@ -103,6 +167,10 @@ if __name__ == "__main__":
     test_acc = test(GCN_CFG)
     pred_kb_file = GCN_CFG['model_folder'] + GCN_CFG['pred_file']
     compare_pr(pred_kb_file, threshold, open(test_re_fp, 'w', encoding='utf-8'))
+    # result for different categories
+    benchmark_file = cfg["benchmark_path"] + cfg["test_data"]
+    test_re_category_file = 'evaluate_test_' + parameter + '_category.txt'
+    evaluate_result_for_category(benchmark_file, test_re_fp, test_re_category_file)
 
 
 
