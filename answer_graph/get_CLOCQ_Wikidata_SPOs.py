@@ -3,7 +3,7 @@ import re
 import hashlib
 import CLOCQInterfaceClient as kg
 
-clocq = kg.CLOCQInterfaceClient(host="http://carpo.mpi-inf.mpg.de", port="7777")
+clocq = kg.CLOCQInterfaceClient(host="https://clocq.mpi-inf.mpg.de/api", port="443")
 
 def get_temporalfromclocq(fact_dic, pro):
     tempfact_dic = {}
