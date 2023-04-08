@@ -12,9 +12,9 @@ import time
 from get_CLOCQ_Wikidata_SPOs import get_wikidata_tuplesfromclocq, write_clocqspo_to_file
 
 def get_spo(path):
-    tagme_wiki_ids_file = path + "/wiki_ids_tagme_new.txt"
+    tagme_wiki_ids_file = path + "/wiki_ids_tagme.txt"
     elq_wiki_ids_file = path + "/wiki_ids_elq.txt"
-    spo_file = path + "/SPO_new.txt"
+    spo_file = path + "/SPO.txt"
     wiki_ids = set()
     if os.path.exists(tagme_wiki_ids_file):  # line A
         with open(tagme_wiki_ids_file) as f:
