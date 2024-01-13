@@ -1,6 +1,10 @@
 EXAQT + TimeQuestions
 ============
 
+## Update
+
+${\color{red}Note}$: We provided a cleaner implementation [here](https://github.com/google-research/syn-rep-learn/blob/main/StableRep/models/losses.py#L49). Hope it helps you to reproduce.
+
 Description
 ------
 This repository contains the code and data for our CIKM'21 full paper. In this paper, we present EXAQT, the first end-to-end system for answering complex temporal questions that have multiple entities and predicates, and associated temporal conditions. EXAQT answers natural language questions over KGs in two stages. The first step computes question-relevant compact subgraphs within the KG, and judiciously enhances them with pertinent temporal facts, using Group Steiner Trees and fine-tuned BERT models. The second step constructs relational graph convolutional networks (R-GCNs) from the first step’s output, and enhances the R-GCNs with time-aware
