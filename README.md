@@ -3,7 +3,7 @@ EXAQT + TimeQuestions
 
 ## Update
 
-${\color{red}Note}$: We provided a cleaner and complete implementation [here][[https://github.com/zhenjia2017/EXAQTV2](https://github.com/zhenjia2017/EXAQTV2). Hope it helps you to reproduce.
+${\color{red}Note}$: We provided a cleaner and complete implementation [here](https://github.com/zhenjia2017/EXAQTV2). Hope it helps you to reproduce the result.
 
 Description
 ------
